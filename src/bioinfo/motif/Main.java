@@ -1,6 +1,7 @@
 package bioinfo.motif;
 import java.util.*;
 import java.util.Random;
+import java.io.*;
 
 public class Main {
 
@@ -14,10 +15,11 @@ public class Main {
     }
 
     void run(){
+        String motif = "AGT";
         takeInput();
-        for (int i = 0; i < this.sequenceCount; i++){
-            generateSequences();
-        }
+        String s = generateSequences();
+        String news = plantMotif(motif,s);
+        printFASTA(news, 1);
     }
 
     void takeInput(){
@@ -62,7 +64,7 @@ public class Main {
 
     }
 
-    void generateSequences(){
+    String generateSequences(){
         Random newr = new Random();
         String sequence = "";
         String nucleotides = "ACGT";
@@ -70,8 +72,37 @@ public class Main {
             int nextval = newr.nextInt(4);
             sequence += nucleotides.charAt(nextval);
         }
-        System.out.println(sequence);
+        return sequence;
     }
 
+    String plantMotif(String motif, String sequence){
+        Random newr = new Random();
+        int newPosition = newr.nextInt(sequence.length() - motif.length());
+        System.out.println(newPosition);
+        char[] chars = sequence.toCharArray();
+        char[] motifc = motif.toCharArray();
+        for(int i =0; i < motif.length(); i++){
+            chars[newPosition+i] = motifc[i];
+        }
+        String finalseq = String.valueOf(chars);
+        System.out.println(sequence + "\n" + finalseq + "\n");
+        return finalseq;
+    }
 
+    void printFASTA(String s, int num){
+        try {
+            File f = new File("seq1.fa");
+            if (!(f.exists() && !f.isDirectory())) {
+                    f.createNewFile();
+            }
+            FileWriter fw = new FileWriter(f);
+            System.out.println("REACHED CHECKPOINT 1");
+            fw.write(">SEQUENCE " + num + "\n" + s);
+            fw.flush();
+            fw.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
 }
