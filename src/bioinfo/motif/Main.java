@@ -1,4 +1,4 @@
-package bioinfo.motif;
+package miniProject;
 import java.util.*;
 import java.util.Random;
 
@@ -29,7 +29,25 @@ public class Main {
 		}
 		return motif;
 	}
-	
+	public static String bindingSite(double[][] motif){
+		String s = "";
+		for (int i = 0; i<motif[0].length; i++){
+			double p = Math.random();
+			if (p<motif[0][i]){
+				s=s+"A";
+			}
+			else if (p<motif[0][i]+motif[1][i]){
+				s=s+"C";
+			}
+			else if (p<motif[0][i]+motif[1][i]+motif[2][i]){
+				s=s+"G";
+			}
+			else{
+				s=s+"T";
+			}
+		}
+		return s;
+	}
     private int icpc = 0;
     private int motifLength = 0;
     private int sequenceLength = 20;
