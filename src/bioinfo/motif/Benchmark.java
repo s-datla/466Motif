@@ -150,6 +150,7 @@ public class Benchmark {
 
     void plantMotif(String motif, List<String> sequences){
         Random newr = new Random();
+        printFASTA(">SEQUENCES");
         for (int j=0; j<sequences.size(); j++) {
             int newPosition = newr.nextInt(sequences.get(j).length() - motif.length());
             System.out.println(newPosition);
@@ -229,7 +230,8 @@ public class Benchmark {
                 f.createNewFile();
             }
             FileWriter fw = new FileWriter(f);
-            fw.write(this.motifLength);
+            fw.write("" + this.motifLength);
+            fw.write("\n");
             fw.flush();
             fw.close();
         } catch (Exception e){
