@@ -1,4 +1,4 @@
-package miniProject;
+package bioinfo.motif;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
