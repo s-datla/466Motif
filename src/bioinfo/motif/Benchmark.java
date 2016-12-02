@@ -1,4 +1,4 @@
-package miniProject;
+package bioinfo.motif;
 import java.util.*;
 import java.util.Random;
 import java.io.*;
