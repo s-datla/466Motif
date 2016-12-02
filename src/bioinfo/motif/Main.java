@@ -1,4 +1,4 @@
-package bioinfo.motif;
+package miniProject;
 
 import java.io.File;
 
@@ -9,7 +9,10 @@ public class Main {
     private int defaultSC = 10;
 
     public static void main(String[] args) {
-        new Main().run();
+        if (args.length != 0 && args[0].equals("benchmark"))
+            new Main().run();
+        else
+            new motifFinder().run();
     }
 
     void run() {
