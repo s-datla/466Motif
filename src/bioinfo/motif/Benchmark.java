@@ -1,9 +1,10 @@
-package bioinfo.motif;
+package miniProject;
 import java.util.*;
 import java.util.Random;
 import java.io.*;
 
 public class Benchmark {
+	Iterator iter;
     public static double[][] randomMotif(int ML, double ICPC){
 		double[][] motif = new double[4][ML];
 		double[] columnValues = new double[ML];
@@ -68,7 +69,7 @@ public class Benchmark {
         String bindingSite = bindingSite(randomMotif);
         takeInput();
         List<String> s = generateSequences();
-        plantMotif(bindingSite,s);
+        plantMotif(s, randomMotif);
     }
 
     public void createDataSet(double icpc, int ml, int sl, int sc, String dataSet) {
@@ -83,7 +84,7 @@ public class Benchmark {
         double[][] randomMotif = randomMotif(this.motifLength, this.icpc);
         String bindingSite = bindingSite(randomMotif);
         List<String> s = generateSequences();
-        plantMotif(bindingSite,s);
+        plantMotif(s,randomMotif);
         printMotif(randomMotif);
         printMotifLength();
     }
@@ -148,10 +149,11 @@ public class Benchmark {
         return sequences;
     }
 
-    void plantMotif(String motif, List<String> sequences){
+    void plantMotif(List<String> sequences, double[][] randomMotif){
+    	
         Random newr = new Random();
-        printFASTA(">SEQUENCES");
         for (int j=0; j<sequences.size(); j++) {
+        	String motif = bindingSite(randomMotif);
             int newPosition = newr.nextInt(sequences.get(j).length() - motif.length());
             System.out.println(newPosition);
             char[] chars = sequences.get(j).toCharArray();
@@ -230,8 +232,7 @@ public class Benchmark {
                 f.createNewFile();
             }
             FileWriter fw = new FileWriter(f);
-            fw.write("" + this.motifLength);
-            fw.write("\n");
+            fw.write(""+this.motifLength);
             fw.flush();
             fw.close();
         } catch (Exception e){
