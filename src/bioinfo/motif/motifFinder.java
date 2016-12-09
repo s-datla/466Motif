@@ -1,4 +1,4 @@
-package bioinfo.motif;
+package miniProject;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -13,7 +13,7 @@ public class motifFinder {
     private int ML;
     private List<Integer> bestPositions = new ArrayList<Integer>();
     private double bestscore=0;
-    
+    int bestK;
     private double[] background;
     private double getScore(List<String> sequences, double[][] pwm, List<Integer> positions){
     	double score=0;
@@ -148,7 +148,7 @@ public class motifFinder {
         }
 
         //for now the condition is a number of iterations, but we can change it for a duration when our algorithm works
-        int K = 29000000;
+        int K = 1000000;
         background = this.calculateP(sequences);
         for (int k=0; k<K; k++) {
             otherSequences = sequences;
@@ -167,6 +167,7 @@ public class motifFinder {
             	bestPositions.clear();
             	for (int i = 0; i<positions.size(); i++){
             		bestPositions.add(positions.get(i));
+            		bestK = k;
             	}
             	
             }
@@ -185,11 +186,22 @@ public class motifFinder {
                 positions = phaseShiftCheck(positions,sequences,PWM);
                 System.out.println(score);
                 System.out.println("");
-                System.out.println(bestscore);
                 double[][] tempPWM2 = calculatePWM(sequences,bestPositions,-1);
                 double score2 = this.getScore(sequences, tempPWM2, bestPositions);
-                System.out.println(score2);
+                if (score2>bestscore){
+                	bestscore = score;
+                	bestPositions.clear();
+                	for (int i = 0; i<positions.size(); i++){
+                		bestPositions.add(positions.get(i));
+                		bestK = k;
+                	}
+                }
+                System.out.println("bscore " +bestscore);
+                System.out.println("bestk "+bestK);
                 System.out.println("");
+                if (checkMaxScore(sequences)){
+                	k=K;
+                }
             }
             /* HERE WE CAN CALCULATE THE SCORE AND UPDATE THE POSITION FOR THE PARTICULAR SEQUENCE*/
 
@@ -197,6 +209,12 @@ public class motifFinder {
         }
         //PRINT EVALUATION
         PWM = calculatePWM(sequences,bestPositions,-1);
+        System.out.println("alg stop best score");
+    	System.out.println(bestK);
+    	System.out.println(bestscore);
+    	for (int i = 0; i<sequences.size(); i++){
+    		System.out.println(sequences.get(i).substring(bestPositions.get(i), bestPositions.get(i)+8));
+    	}
         //for  (int i = 0; i<PWM.length; i++){
         	
         	//System.out.println(""+PWM[i][0]+" "+PWM[i][1]+" "+PWM[i][2]+" "+PWM[i][3]);
@@ -205,6 +223,18 @@ public class motifFinder {
         	//System.out.println(sequences.get(i).substring(positions.get(i), positions.get(i)+8));
         //}
         
+    }
+    private boolean checkMaxScore(List<String> sequences){
+    	for (int i = 0; i<sequences.size()-1; i++){
+    		int p1 = bestPositions.get(i);
+    		int p2 = bestPositions.get(i+1);
+    		String s1 = sequences.get(i).substring(p1,p1+8);
+    		String s2 = sequences.get(i+1).substring(p2, p2+8);
+    		if (!s1.equals(s2)){
+    			return false;
+    		}
+    	}
+    	return true;
     }
     private List<Integer> phaseShiftCheck(List<Integer> positions, List<String> sequences, double[][] pwm){
     	double score = this.getScore(sequences, pwm, positions);
