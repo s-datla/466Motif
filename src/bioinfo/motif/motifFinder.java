@@ -169,19 +169,19 @@ public class motifFinder {
             		bestPositions.add(positions.get(i));
             		bestK = k;
             	}
-            	
+
             }
             if (k%100000==0){
-            	
+
             	System.out.println(k);
                 for  (int i = 0; i<tempPWM.length; i++){
                 	System.out.println(""+tempPWM[i][0]+" "+tempPWM[i][1]+" "+tempPWM[i][2]+" "+tempPWM[i][3]);
-                	
+
                 }
                 for (int i = 0; i<sequences.size(); i++){
                 	System.out.println(sequences.get(i).substring(positions.get(i), positions.get(i)+8));
                 }
-                
+
                 System.out.println(this.getScore(sequences, PWM, positions));
                 positions = phaseShiftCheck(positions,sequences,PWM);
                 System.out.println(score);
@@ -212,17 +212,19 @@ public class motifFinder {
         System.out.println("alg stop best score");
     	System.out.println(bestK);
     	System.out.println(bestscore);
+			printPredictedMotif(PWM);
     	for (int i = 0; i<sequences.size(); i++){
     		System.out.println(sequences.get(i).substring(bestPositions.get(i), bestPositions.get(i)+8));
+				printPredictedLocation(new String(bestPositions.get(i)));
     	}
         //for  (int i = 0; i<PWM.length; i++){
-        	
+
         	//System.out.println(""+PWM[i][0]+" "+PWM[i][1]+" "+PWM[i][2]+" "+PWM[i][3]);
         	//System.out.println(positions.get(i));
         	//System.out.println(sequences.get(i));
         	//System.out.println(sequences.get(i).substring(positions.get(i), positions.get(i)+8));
         //}
-        
+
     }
     private boolean checkMaxScore(List<String> sequences){
     	for (int i = 0; i<sequences.size()-1; i++){
@@ -350,5 +352,43 @@ public class motifFinder {
     public motifFinder() {
     }
 
+		void printPredictedMotif(double[][] motif){
+        try {
+            File f = new File(dataSet + "/predictedmotif.txt");
+            if (!(f.exists() && !f.isDirectory())) {
+                f.createNewFile();
+            }
+            FileWriter fw = new FileWriter(f);
+            fw.write(">PREDICTED MOTIF  " + this.motifLength + "\n" );
+            for (int i=0; i<this.motifLength; i++) {
+                for (int j=0; j<4 ; j++) {
+                    fw.write(motif[j][i]+ " ");
+
+                }
+                fw.write("\n");
+            }
+            fw.flush();
+            fw.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+		void printPredictedLocation(String location){
+        try {
+            File f = new File(dataSet + "/predictedsites.txt");
+            if (!(f.exists() && !f.isDirectory())) {
+                f.createNewFile();
+            }
+            FileWriter fw = new FileWriter(f, true);
+            fw.write(location);
+            fw.write("\n");
+            fw.flush();
+            fw.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
 
 }
