@@ -381,7 +381,7 @@ public class motifFinder {
             fw.write(">PREDICTED MOTIF  " + this.ML + "\n" );
             for (int i=0; i<this.ML; i++) {
                 for (int j=0; j<4 ; j++) {
-                    fw.write(motif[j][i]+ " ");
+                    fw.write(motif[i][j]+ " ");
 
                 }
                 fw.write("\n");
