@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.io.File;
+import java.io.FileWriter;
 
 public class motifFinder {
 	private static double pseudocount = 0.25;
@@ -15,6 +17,8 @@ public class motifFinder {
     private double bestscore=0;
     int bestK;
     private double[] background;
+    private String dir;
+
     private double getScore(List<String> sequences, double[][] pwm, List<Integer> positions){
     	double score=0;
 		double Aback = background[0];
@@ -126,7 +130,7 @@ public class motifFinder {
     }
 
     public void run(){
-        String dir = "benchmark/icpc=1.0&num=0";
+        dir = "benchmark/icpc=1.0&num=0";
         try {
             readSequences(dir);
             readMotifLength(dir);
@@ -212,10 +216,25 @@ public class motifFinder {
         System.out.println("alg stop best score");
     	System.out.println(bestK);
     	System.out.println(bestscore);
-			printPredictedMotif(PWM);
+        double[][] bestMotif = new double[ML][4];
+        for (int a = 0; a < sequences.size(); a ++){
+            for (int b = 0; b < ML; b++){
+                char c = sequences.get(a).charAt(bestPositions.get(a)+b);
+                if(c == 'A'){
+                    bestMotif[b][0] += 1;
+                } else if(c == 'C') {
+                    bestMotif[b][1] += 1;
+                } else if(c == 'G'){
+                    bestMotif[b][2] += 1;
+                } else {
+                    bestMotif[b][3] += 1;
+                }
+            }
+        }
+        printPredictedMotif(bestMotif);
     	for (int i = 0; i<sequences.size(); i++){
     		System.out.println(sequences.get(i).substring(bestPositions.get(i), bestPositions.get(i)+8));
-				printPredictedLocation(new String(bestPositions.get(i)));
+				printPredictedLocation(bestPositions.get(i).toString());
     	}
         //for  (int i = 0; i<PWM.length; i++){
 
@@ -352,15 +371,15 @@ public class motifFinder {
     public motifFinder() {
     }
 
-		void printPredictedMotif(double[][] motif){
+    void printPredictedMotif(double[][] motif){
         try {
-            File f = new File(dataSet + "/predictedmotif.txt");
+            File f = new File(this.dir + "/predictedmotif.txt");
             if (!(f.exists() && !f.isDirectory())) {
                 f.createNewFile();
             }
             FileWriter fw = new FileWriter(f);
-            fw.write(">PREDICTED MOTIF  " + this.motifLength + "\n" );
-            for (int i=0; i<this.motifLength; i++) {
+            fw.write(">PREDICTED MOTIF  " + this.ML + "\n" );
+            for (int i=0; i<this.ML; i++) {
                 for (int j=0; j<4 ; j++) {
                     fw.write(motif[j][i]+ " ");
 
@@ -376,7 +395,7 @@ public class motifFinder {
 
 		void printPredictedLocation(String location){
         try {
-            File f = new File(dataSet + "/predictedsites.txt");
+            File f = new File(this.dir + "/predictedsites.txt");
             if (!(f.exists() && !f.isDirectory())) {
                 f.createNewFile();
             }
