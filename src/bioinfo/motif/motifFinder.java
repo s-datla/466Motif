@@ -193,7 +193,7 @@ public class motifFinder {
                 double[][] tempPWM2 = calculatePWM(sequences,bestPositions,-1);
                 double score2 = this.getScore(sequences, tempPWM2, bestPositions);
                 if (score2>bestscore){
-                	bestscore = score;
+                	bestscore = score2;
                 	bestPositions.clear();
                 	for (int i = 0; i<positions.size(); i++){
                 		bestPositions.add(positions.get(i));
