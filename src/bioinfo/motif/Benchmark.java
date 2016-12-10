@@ -25,7 +25,7 @@ public class Benchmark {
 			int nucleotideToEmphasize = (int) (Math.random()*4);
 			//System.out.println(nucleotideToEmphasize);
 			for (int j = 0; j<4; j++){
-				motif[j][i] = (1-p);
+				motif[j][i] = (1-p)/3;
 			}
 			motif[nucleotideToEmphasize][i]=p;
 		}
