@@ -231,6 +231,12 @@ public class motifFinder {
                 }
             }
         }
+         for (int i = 0; i<ML; i++){
+        	bestMotif[i][0]=bestMotif[i][0]/sequences.size();
+        	bestMotif[i][1]=bestMotif[i][1]/sequences.size();
+        	bestMotif[i][2]=bestMotif[i][2]/sequences.size();
+        	bestMotif[i][3]=bestMotif[i][3]/sequences.size();
+        }
         printPredictedMotif(bestMotif);
     	for (int i = 0; i<sequences.size(); i++){
     		System.out.println(sequences.get(i).substring(bestPositions.get(i), bestPositions.get(i)+8));
