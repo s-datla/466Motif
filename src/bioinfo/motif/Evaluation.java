@@ -159,7 +159,7 @@ public class Evaluation {
 
     void printEvaluation(String dir, double relativeEntropy, double overlaps){
         try {
-            File f = new File("evaluation.csv");
+            File f = new File("src/bioinfo/motif/evaluation.csv");
 
             if (!(f.exists() && !f.isDirectory())) {
                 f.createNewFile();
