@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.FileWriter;
 
 public class motifFinder {
-	private static double pseudocount = 0.25;
+    private static double pseudocount = 0.25;
     private List<String> sequences;
     private int ML;
     private List<Integer> bestPositions = new ArrayList<Integer>();
@@ -20,39 +20,39 @@ public class motifFinder {
     private String dir;
 
     private double getScore(List<String> sequences, double[][] pwm, List<Integer> positions){
-    	double score=0;
-		double Aback = background[0];
-		double Cback = background[1];
-		double Gback = background[2];
-		double Tback = background[3];
-    	for (int i = 0; i<ML; i++){
-    		double Aprob = pwm[i][0];
-    		double Cprob = pwm[i][1];
-    		double Gprob = pwm[i][2];
-    		double Tprob = pwm[i][3];
-    		for (int j = 0; j<sequences.size(); j++){
-    			char c = sequences.get(j).charAt(positions.get(j)+i);
-    			if (c=='A'){
-    				score = score+(Aprob*Math.log(Aprob/Aback));
-    			}
-    			if (c=='C'){
-    				score = score+(Cprob*Math.log(Cprob/Cback));
-    			}
-    			if (c=='G'){
-    				score = score+(Gprob*Math.log(Gprob/Gback));
-    			}
-    			if (c=='T'){
-    				score = score+(Tprob*Math.log(Tprob/Tback));
-    			}
-    		}
-    	}
-    	return score;
+        double score=0;
+        double Aback = background[0];
+        double Cback = background[1];
+        double Gback = background[2];
+        double Tback = background[3];
+        for (int i = 0; i<ML; i++){
+            double Aprob = pwm[i][0];
+            double Cprob = pwm[i][1];
+            double Gprob = pwm[i][2];
+            double Tprob = pwm[i][3];
+            for (int j = 0; j<sequences.size(); j++){
+                char c = sequences.get(j).charAt(positions.get(j)+i);
+                if (c=='A'){
+                    score = score+(Aprob*Math.log(Aprob/Aback));
+                }
+                if (c=='C'){
+                    score = score+(Cprob*Math.log(Cprob/Cback));
+                }
+                if (c=='G'){
+                    score = score+(Gprob*Math.log(Gprob/Gback));
+                }
+                if (c=='T'){
+                    score = score+(Tprob*Math.log(Tprob/Tback));
+                }
+            }
+        }
+        return score;
     }
     public int startPos(double[][] probDist, String sequence){
         double[] probabilities = new double[sequence.length()-probDist.length];
         int ret = 0;
         for (int i = 0; i<sequence.length()-probDist.length; i++){
-        	probabilities[i] = 1;
+            probabilities[i] = 1;
             for (int j = 0; j<probDist.length; j++){
                 if (sequence.charAt(i+j)=='A'){
                     probabilities[i]=probabilities[i]*probDist[j][0];
@@ -70,9 +70,9 @@ public class motifFinder {
         }
         ret = 0;
         for (int i = 0; i<probabilities.length; i++){
-        	if (probabilities[i]>probabilities[ret]){
-        		ret = i;
-        	}
+            if (probabilities[i]>probabilities[ret]){
+                ret = i;
+            }
         }
         ret = getRandomProbability(probabilities);
         return ret;
@@ -129,13 +129,17 @@ public class motifFinder {
         }
     }
 
-    public void run(){
-        dir = "benchmark/icpc=1.0&num=0";
+    public void run(String dire) {
+        dir = dire;
         try {
             readSequences(dir);
             readMotifLength(dir);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        File f = new File(dir + "/predictedsites.txt");
+        if (f.exists() && !f.isDirectory()) {
+            f.delete();
         }
 
         Random randomizer = new Random();
@@ -147,64 +151,64 @@ public class motifFinder {
         List<Integer> positions = new ArrayList<Integer>();
         int lengthSeq = sequences.get(0).length();
         //we initialize randomly each position
-        for (int i = 0; i<sequences.size() ; i++) {
+        for (int i = 0; i < sequences.size(); i++) {
             positions.add(randomizer.nextInt(lengthSeq - ML));
         }
 
         //for now the condition is a number of iterations, but we can change it for a duration when our algorithm works
         int K = 1000000;
         background = this.calculateP(sequences);
-        for (int k=0; k<K; k++) {
+        for (int k = 0; k < K; k++) {
             otherSequences = sequences;
             r = randomizer.nextInt(sequences.size());
             seq = sequences.get(r);
             //I'm not sure that we need the previous position of the sequence z
             pos = positions.get(r);
-            PWM = calculatePWM(sequences, positions,r);
+            PWM = calculatePWM(sequences, positions, r);
             //probs = calculateP(sequences);
-            pos=startPos(PWM,seq);
+            pos = startPos(PWM, seq);
             positions.set(r, pos);
-            double[][] tempPWM = calculatePWM(sequences,positions,-1);
+            double[][] tempPWM = calculatePWM(sequences, positions, -1);
             double score = this.getScore(sequences, tempPWM, positions);
-            if (score>bestscore){
-            	bestscore = score;
-            	bestPositions.clear();
-            	for (int i = 0; i<positions.size(); i++){
-            		bestPositions.add(positions.get(i));
-            		bestK = k;
-            	}
+            if (score > bestscore) {
+                bestscore = score;
+                bestPositions.clear();
+                for (int i = 0; i < positions.size(); i++) {
+                    bestPositions.add(positions.get(i));
+                    bestK = k;
+                }
 
             }
-            if (k%100000==0){
+            if (k % 100000 == 0) {
 
-            	System.out.println(k);
-                for  (int i = 0; i<tempPWM.length; i++){
-                	System.out.println(""+tempPWM[i][0]+" "+tempPWM[i][1]+" "+tempPWM[i][2]+" "+tempPWM[i][3]);
+                System.out.println(k);
+                for (int i = 0; i < tempPWM.length; i++) {
+                    System.out.println("" + tempPWM[i][0] + " " + tempPWM[i][1] + " " + tempPWM[i][2] + " " + tempPWM[i][3]);
 
                 }
-                for (int i = 0; i<sequences.size(); i++){
-                	System.out.println(sequences.get(i).substring(positions.get(i), positions.get(i)+8));
+                for (int i = 0; i < sequences.size(); i++) {
+                    System.out.println(sequences.get(i).substring(positions.get(i), positions.get(i) + 8));
                 }
 
                 System.out.println(this.getScore(sequences, PWM, positions));
-                positions = phaseShiftCheck(positions,sequences,PWM);
+                positions = phaseShiftCheck(positions, sequences, PWM);
                 System.out.println(score);
                 System.out.println("");
-                double[][] tempPWM2 = calculatePWM(sequences,bestPositions,-1);
+                double[][] tempPWM2 = calculatePWM(sequences, bestPositions, -1);
                 double score2 = this.getScore(sequences, tempPWM2, bestPositions);
-                if (score2>bestscore){
-                	bestscore = score2;
-                	bestPositions.clear();
-                	for (int i = 0; i<positions.size(); i++){
-                		bestPositions.add(positions.get(i));
-                		bestK = k;
-                	}
+                if (score2 > bestscore) {
+                    bestscore = score2;
+                    bestPositions.clear();
+                    for (int i = 0; i < positions.size(); i++) {
+                        bestPositions.add(positions.get(i));
+                        bestK = k;
+                    }
                 }
-                System.out.println("bscore " +bestscore);
-                System.out.println("bestk "+bestK);
+                System.out.println("bscore " + bestscore);
+                System.out.println("bestk " + bestK);
                 System.out.println("");
-                if (checkMaxScore(sequences)){
-                	k=K;
+                if (checkMaxScore(sequences)) {
+                    k = K;
                 }
             }
             /* HERE WE CAN CALCULATE THE SCORE AND UPDATE THE POSITION FOR THE PARTICULAR SEQUENCE*/
@@ -212,103 +216,104 @@ public class motifFinder {
 
         }
         //PRINT EVALUATION
-        PWM = calculatePWM(sequences,bestPositions,-1);
+        PWM = calculatePWM(sequences, bestPositions, -1);
         System.out.println("alg stop best score");
-    	System.out.println(bestK);
-    	System.out.println(bestscore);
+        System.out.println(bestK);
+        System.out.println(bestscore);
         double[][] bestMotif = new double[ML][4];
-        for (int a = 0; a < sequences.size(); a ++){
-            for (int b = 0; b < ML; b++){
-                char c = sequences.get(a).charAt(bestPositions.get(a)+b);
-                if(c == 'A'){
+        for (int a = 0; a < sequences.size(); a++) {
+            for (int b = 0; b < ML; b++) {
+                char c = sequences.get(a).charAt(bestPositions.get(a) + b);
+                if (c == 'A') {
                     bestMotif[b][0] += 1;
-                } else if(c == 'C') {
+                } else if (c == 'C') {
                     bestMotif[b][1] += 1;
-                } else if(c == 'G'){
+                } else if (c == 'G') {
                     bestMotif[b][2] += 1;
                 } else {
                     bestMotif[b][3] += 1;
                 }
             }
         }
-         for (int i = 0; i<ML; i++){
-        	bestMotif[i][0]=bestMotif[i][0]/sequences.size();
-        	bestMotif[i][1]=bestMotif[i][1]/sequences.size();
-        	bestMotif[i][2]=bestMotif[i][2]/sequences.size();
-        	bestMotif[i][3]=bestMotif[i][3]/sequences.size();
+        for (int i = 0; i < ML; i++) {
+            bestMotif[i][0] = bestMotif[i][0] / sequences.size();
+            bestMotif[i][1] = bestMotif[i][1] / sequences.size();
+            bestMotif[i][2] = bestMotif[i][2] / sequences.size();
+            bestMotif[i][3] = bestMotif[i][3] / sequences.size();
         }
         printPredictedMotif(bestMotif);
-    	for (int i = 0; i<sequences.size(); i++){
-    		System.out.println(sequences.get(i).substring(bestPositions.get(i), bestPositions.get(i)+8));
-				printPredictedLocation(bestPositions.get(i).toString());
-    	}
+        for (int i = 0; i < sequences.size(); i++) {
+            System.out.println(sequences.get(i).substring(bestPositions.get(i), bestPositions.get(i) + 8));
+            printPredictedLocation(bestPositions.get(i).toString());
+        }
+        printBestK(bestK);
         //for  (int i = 0; i<PWM.length; i++){
 
-        	//System.out.println(""+PWM[i][0]+" "+PWM[i][1]+" "+PWM[i][2]+" "+PWM[i][3]);
-        	//System.out.println(positions.get(i));
-        	//System.out.println(sequences.get(i));
-        	//System.out.println(sequences.get(i).substring(positions.get(i), positions.get(i)+8));
+        //System.out.println(""+PWM[i][0]+" "+PWM[i][1]+" "+PWM[i][2]+" "+PWM[i][3]);
+        //System.out.println(positions.get(i));
+        //System.out.println(sequences.get(i));
+        //System.out.println(sequences.get(i).substring(positions.get(i), positions.get(i)+8));
         //}
 
     }
     private boolean checkMaxScore(List<String> sequences){
-    	for (int i = 0; i<sequences.size()-1; i++){
-    		int p1 = bestPositions.get(i);
-    		int p2 = bestPositions.get(i+1);
-    		String s1 = sequences.get(i).substring(p1,p1+8);
-    		String s2 = sequences.get(i+1).substring(p2, p2+8);
-    		if (!s1.equals(s2)){
-    			return false;
-    		}
-    	}
-    	return true;
+        for (int i = 0; i<sequences.size()-1; i++){
+            int p1 = bestPositions.get(i);
+            int p2 = bestPositions.get(i+1);
+            String s1 = sequences.get(i).substring(p1,p1+8);
+            String s2 = sequences.get(i+1).substring(p2, p2+8);
+            if (!s1.equals(s2)){
+                return false;
+            }
+        }
+        return true;
     }
     private List<Integer> phaseShiftCheck(List<Integer> positions, List<String> sequences, double[][] pwm){
-    	double score = this.getScore(sequences, pwm, positions);
-    	double leftscore = 0;
-    	double rightscore = 0;
-    	boolean canMoveRight = true;
-    	boolean canMoveLeft = true;
-    	for (int i = 0; i<positions.size(); i++){
-    		if (positions.get(i)-1<0){
-    			canMoveLeft = false;
-    		}
-    		if (positions.get(i)+1>=sequences.get(0).length()){
-    			canMoveRight = false;
-    		}
-    	}
-    	if (canMoveLeft){
-    		for (int i = 0; i<positions.size(); i++){
-    			positions.set(i, positions.get(i)-1);
-    		}
-    		pwm = calculatePWM(sequences,positions,-1);
-    		leftscore = getScore(sequences,pwm,positions);
-    		for (int i = 0; i<positions.size(); i++){
-    			positions.set(i, positions.get(i)+1);
-    		}
-    	}
-    	if (canMoveRight){
-    		for (int i = 0; i<positions.size(); i++){
-    			positions.set(i, positions.get(i)+1);
-    		}
-       		pwm = calculatePWM(sequences,positions,-1);
-    		rightscore = getScore(sequences,pwm,positions);
-    		for (int i = 0; i<positions.size(); i++){
-    			positions.set(i, positions.get(i)-1);
-    		}
-    	}
-    	if (leftscore>score && leftscore>rightscore){
-    		for (int i = 0; i<positions.size(); i++){
-    			positions.set(i, positions.get(i)-1);
-    		}
-    		return positions;
-    	}
-    	if (rightscore>score){
-    		for (int i = 0; i<positions.size(); i++){
-    			positions.set(i, positions.get(i)+1);
-    		}
-    	}
-    	return positions;
+        double score = this.getScore(sequences, pwm, positions);
+        double leftscore = 0;
+        double rightscore = 0;
+        boolean canMoveRight = true;
+        boolean canMoveLeft = true;
+        for (int i = 0; i<positions.size(); i++){
+            if (positions.get(i)-1<0){
+                canMoveLeft = false;
+            }
+            if (positions.get(i)+1>=sequences.get(0).length()){
+                canMoveRight = false;
+            }
+        }
+        if (canMoveLeft){
+            for (int i = 0; i<positions.size(); i++){
+                positions.set(i, positions.get(i)-1);
+            }
+            pwm = calculatePWM(sequences,positions,-1);
+            leftscore = getScore(sequences,pwm,positions);
+            for (int i = 0; i<positions.size(); i++){
+                positions.set(i, positions.get(i)+1);
+            }
+        }
+        if (canMoveRight){
+            for (int i = 0; i<positions.size(); i++){
+                positions.set(i, positions.get(i)+1);
+            }
+            pwm = calculatePWM(sequences,positions,-1);
+            rightscore = getScore(sequences,pwm,positions);
+            for (int i = 0; i<positions.size(); i++){
+                positions.set(i, positions.get(i)-1);
+            }
+        }
+        if (leftscore>score && leftscore>rightscore){
+            for (int i = 0; i<positions.size(); i++){
+                positions.set(i, positions.get(i)-1);
+            }
+            return positions;
+        }
+        if (rightscore>score){
+            for (int i = 0; i<positions.size(); i++){
+                positions.set(i, positions.get(i)+1);
+            }
+        }
+        return positions;
     }
     //calculate the probability of generating x according to the background model (=~1/4 for each nucleotide)
     private double[] calculateP (List<String> sequences) {
@@ -341,9 +346,9 @@ public class motifFinder {
     private double[][] calculatePWM(List<String> sequences, List<Integer> positions, int sequence) {
         double[][] PWM = new double[ML][4];
         for (int i = 0; i<sequences.size(); i++) {
-        	if (i==sequence){
-        		continue;
-        	}
+            if (i==sequence){
+                continue;
+            }
             String seq = sequences.get(i).substring(positions.get(i), positions.get(i)+ML);
             for (int j = 0; j<ML; j++){
                 int pos = j;
@@ -364,10 +369,10 @@ public class motifFinder {
         //pseudo-count of 0.25 + transformation in probability 0<PWM<1
         for (int j = 0; j<ML; j++){
             for (int k = 0; k<4; k++) {
-            	int size = sequences.size();
-            	if (sequence>=0){
-            		size--;
-            	}
+                int size = sequences.size();
+                if (sequence>=0){
+                    size--;
+                }
                 PWM[j][k] = (PWM[j][k] + pseudocount)/(size+pseudocount*4);
             }
         }
@@ -399,7 +404,7 @@ public class motifFinder {
         }
     }
 
-		void printPredictedLocation(String location){
+    void printPredictedLocation(String location){
         try {
             File f = new File(this.dir + "/predictedsites.txt");
             if (!(f.exists() && !f.isDirectory())) {
@@ -408,6 +413,22 @@ public class motifFinder {
             FileWriter fw = new FileWriter(f, true);
             fw.write(location);
             fw.write("\n");
+            fw.flush();
+            fw.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    void printBestK(int k){
+        try {
+            File f = new File(this.dir + "/bestK.txt");
+            if (!(f.exists() && !f.isDirectory())) {
+                f.createNewFile();
+            }
+            FileWriter fw = new FileWriter(f, false);
+            fw.write(String.valueOf(k));
             fw.flush();
             fw.close();
         } catch (Exception e){
