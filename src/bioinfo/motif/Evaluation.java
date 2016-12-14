@@ -10,6 +10,7 @@ public class Evaluation {
     private double[][] predictedMotif;
     private List<Integer> sites = new ArrayList<Integer>();
     private List<Integer> predictedSites = new ArrayList<Integer>();
+    private List<String> sequences;
 
 
     public void doEvalutation(String dir) {
@@ -31,7 +32,7 @@ public class Evaluation {
         System.out.println("relative entropy:" +relativeEntropy);
         System.out.println("ratio overlapping positions: " + overlappingPositions);
 
-        printEvaluation(dir, relativeEntropy, overlappingPositions);
+        //printEvaluation(dir, relativeEntropy, overlappingPositions);
     }
 
     //more relevant as a ratio
@@ -157,7 +158,7 @@ public class Evaluation {
         }
     }
 
-    void printEvaluation(String dir, double relativeEntropy, double overlaps){
+    private void printEvaluation(String dir, double relativeEntropy, double overlaps){
         try {
             File f = new File("src/bioinfo/motif/evaluation.csv");
 
@@ -173,5 +174,66 @@ public class Evaluation {
             e.printStackTrace();
         }
 
+    }
+
+    private void readSequences(String directory) throws IOException {
+        BufferedReader inputStream = null;
+        String sequence = null;
+        List<String> sequences = new ArrayList<String>();
+        try {
+            inputStream = new BufferedReader(new FileReader(directory + "/sequences.fa"));
+            //inputStream.readLine();
+            while ((sequence = inputStream.readLine()) != null) {
+                sequences.add(sequence);
+            }
+
+        } finally {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+        }
+        this.sequences = sequences;
+    }
+
+    public void informationContent(String dir){
+        double[][] probs = new double[8][4];
+        for (int i=0;i<8;i++){
+            for(int j=0;j<4;j++){
+                probs[i][j]=0.25;
+            }
+        }
+        try {
+            readMotifLength(dir);
+            readPredictedMotif(dir);
+            readSites(dir);
+            readSequences(dir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        double[][] realMotif = new double[ML][4];
+        for (int a = 0; a < sites.size(); a++) {
+            for (int b = 0; b < ML; b++) {
+                char c = sequences.get(a).charAt(sites.get(a) + b);
+                if (c == 'A') {
+                    realMotif[b][0] += 1;
+                } else if (c == 'C') {
+                    realMotif[b][1] += 1;
+                } else if (c == 'G') {
+                    realMotif[b][2] += 1;
+                } else {
+                    realMotif[b][3] += 1;
+                }
+            }
+        }
+
+        for (int i = 0; i < ML; i++) {
+            realMotif[i][0] = realMotif[i][0] / sequences.size();
+            realMotif[i][1] = realMotif[i][1] / sequences.size();
+            realMotif[i][2] = realMotif[i][2] / sequences.size();
+            realMotif[i][3] = realMotif[i][3] / sequences.size();
+        }
+
+        System.out.println("predictedMotif informationContent: "+ relativeEntropy(probs, predictedMotif));
+        System.out.println("motif with real position informationContent: "+ relativeEntropy(probs, realMotif));
     }
 }
