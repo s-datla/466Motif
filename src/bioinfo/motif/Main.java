@@ -9,13 +9,17 @@ public class Main {
     private int defaultSC = 10;
 
     public static void main(String[] args) {
-        if (args.length != 0 && args[0].equals("benchmark"))
+        if (args.length != 0 && args[0].equals("benchmark")) {
             new Main().run();
-        else {
-
-                    String dir = "src/benchmark/icpc=1.0&num=9";
-                    new Evaluation().informationContent(dir);
+        } else {
+            String[] datasetnames = {"defaultParameter", "icpc=1.0", "icpc=1.5", "ml=6", "ml=7", "sc=5", "sc=20"};
+            for (int dsnum = 0; dsnum < datasetnames.length; dsnum++) {
+                for (int num = 7; num < 10; num++) {
+                    String dir = "src/benchmark/" + datasetnames[dsnum] + "&num=" + num;
+                    new Evaluation().doEvalutation(dir);
                 }
+            }
+        }
     }
 
     void run() {
